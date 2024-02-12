@@ -3,7 +3,7 @@ import "dotenv/config";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import dbconnect from "./src/config/dbConfig.js";
-
+import userRoute from './src/routes/userRoutes.js'
 const app = express();
 const port = process.env.PORT;
 app.use(express.json());
@@ -17,6 +17,9 @@ app.use(
 );
 app.use(cookieParser());
 app.use(express.static("public"));
+
+app.use("/api/users", userRoute); 
+
 dbconnect();
 
 app.listen(port, () => {
