@@ -16,13 +16,17 @@ const isAuthenticated = (request, response, next) => {
     }
   };
 
-const isAdmin = (req, res, next) => {
-    if (req.userData && req.userData.isAdmin) {
+  const isAuthorizedUser = (roles) => {
+    return (request, response, next) => {
+      const userRole = request.userData.role;
+      console.log(userRole)
+      if (!roles.includes(userRole)) {
+        return response.status(403).json({ error: 'Forbidden' });
+      }
+
       next();
-    } else {
-      res.status(403).json({ error: "Forbidden!" });
-    }
+    };
   };
   
   
-  export {isAdmin, isAuthenticated};
+  export {isAuthorizedUser, isAuthenticated};

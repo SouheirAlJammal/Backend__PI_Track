@@ -26,10 +26,13 @@ const userSchema = new mongoose.Schema({
   image: {
     type: String,
   },
-  isAdmin: {
-    type: Boolean,
-    default: false,
+  role: {
+    type: String,
+    enum: ["user", "admin"],
+    default: "user"
   }
+},{
+  timestamps:true
 });
 
 export default model("User", userSchema);

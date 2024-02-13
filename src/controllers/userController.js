@@ -9,7 +9,7 @@ const register = async (req, res) => {
     password,
     DOB,
     description,
-    isAdmin,
+    role,
   } = req.body;
 
   try {
@@ -37,7 +37,7 @@ const register = async (req, res) => {
       password,
       DOB,
       description,
-      isAdmin,
+      role,
     });
 
     return res.status(201).json({
@@ -162,7 +162,7 @@ const updateProfile = async (req, res) => {
       email,
       password,
       DOB,
-      isAdmin,
+      role,
       description,
     } = req.body;
 
@@ -188,7 +188,7 @@ const updateProfile = async (req, res) => {
       password,
       DOB,
       description,
-      isAdmin,
+      role,
       image: imagePath || user.image,
     });
 
