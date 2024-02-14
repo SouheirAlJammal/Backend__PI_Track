@@ -5,8 +5,8 @@ const secret = `${process.env.JWT_SECRET}`;
 export const generateToken = (user) => {
     return jwt.sign(
         {
-            id: user.id,
-            userName:user.userName,
+            id: user._id,
+            username:user.username,
             email: user.email,
             role: user.role
         },
