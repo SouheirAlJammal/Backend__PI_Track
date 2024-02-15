@@ -1,4 +1,4 @@
-import express from 'express';
+import express from 'express'
 import { register, login, getUsers, getUser, updateProfile, deleteUser, logout,getUserByMail } from '../controllers/userController.js';
 import { uploadImage } from '../middlewares/multer.js';
 import { logInValidation, registerValidation } from '../middlewares/authValidationregister.js';

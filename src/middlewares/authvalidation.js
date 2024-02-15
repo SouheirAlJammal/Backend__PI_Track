@@ -4,7 +4,7 @@ const validateRegister = (data) => {
     const errors = {};
   
     if (!validator.isLength(data.username, { min: 3 })) {
-      errors.username = 'User name must be at least 3 characters.';
+      errors.username = 'Username must be at least 3 characters.';
     }
   
     if (!validator.isEmail(data.email)) {

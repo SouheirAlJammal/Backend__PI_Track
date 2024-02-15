@@ -7,8 +7,8 @@ const isAuthenticated = (request, response, next) => {
       if (!token) throw new Error('Token not provided');
   
       const decoded = verifyToken(token);
-      request.user = decoded;
-      console.log(request.user)
+      request.userData = decoded;
+      console.log(request.userData)
       next();
     } catch (error) {
       return response.status(401).json({
