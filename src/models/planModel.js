@@ -2,48 +2,65 @@ import mongoose from "mongoose";
 
 const { model } = mongoose;
 
+const participantSchema = new mongoose.Schema({
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+    },
+    role: {
+        type: String,
+        enum: ['creator', 'editor', 'follower'],
+        required: true,
+    },
+    achievedTotalMins: {
+        type: Number,
+        default: 0,
+    }
+});
+
+
 const planSchema = new mongoose.Schema({
     title: {
         type: String,
-        required: true
+        required: true,
     },
-    image:{
-        type:String,
+    image: String,
+    createrId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
     },
     totalMins: {
         type: Number,
-        required: true,
-        default:0
-    },
-    achievedMins: {
-        type: Number,
-        required: true,
         default: 0,
-        validate: {
-            validator: function(value) {
-                return value <= this.totalMins;
-            },
-            message: props => `AchievedMins (${props.value}) should be smaller than totalMins (${this.totalMins})`
-        }
     },
+    participants: [participantSchema],
+    lessonsId: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Lesson',
+    }],
     isDeleted: {
         type: Boolean,
-        default: false
+        default: false,
     },
-   createrId:{
-    type:mongoose.Types.ObjectId,
-    required:true
-   },
-   followersId:{
-    type:[mongoose.Types.ObjectId]
-   },
-   editorsId:{
-    type:[mongoose.Types.ObjectId]
-   },
-   lessonsId:{
-    type:[mongoose.Types.ObjectId]
-   }
-
+    invitations: {
+        userId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required: true,
+        },
+        role: {
+            type: String,
+            enum: ['editor', 'follower'],
+            required: true,
+        },
+        isAccepted: {
+            type: Boolean,
+            default: false
+        }
+    }
+}, {
+    timestamps: true,
 });
-
-export default model("Lesson", planSchema);
+export default model("Plan", planSchema);

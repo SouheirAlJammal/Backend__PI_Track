@@ -1,53 +1,59 @@
 import mongoose from "mongoose";
 
-const { Schema, model } = mongoose;
+const { model } = mongoose;
 
-const lessonSchema = new mongoose.Schema({
-    title: {
-        type: String,
-        required: true
-    },
-    description: {
-        type: String,
-        required: true
-    },
-    totalMins: {
-        type: Number,
+const lessonProgressSchema = new mongoose.Schema({
+    participantId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
         required: true,
-        default:0
     },
     achievedMins: {
         type: Number,
         required: true,
         default: 0,
         validate: {
+             // Access totalMins from the parent document
             validator: function(value) {
-                return value <= this.totalMins;
+                return value <= this.parent().totalMins;
             },
-            message: props => `AchievedMins (${props.value}) should be smaller than totalMins (${this.totalMins})`
+            message: props => `AchievedMins (${props.value}) should be smaller than totalMins`
         }
-    },
-    status: {
-        type: String,
-        enum: ['Pending', 'Progress', 'Completed'],
-        default: 'Pending'
-    },
-    resources: {
-        type: [String],
     },
     notes: {
         type: String,
     },
+    status: {
+        type: String,
+        enum: ['Pending', 'In Progress', 'Completed'],
+        default: 'Pending',
+    }
+});
+
+const lessonSchema = new mongoose.Schema({
+    title: {
+        type: String,
+        required: true,
+    },
+    description: {
+        type: String,
+        required: true,
+    },
+    totalMins: {
+        type: Number,
+        required: true,
+        default: 0,
+    },
+    resources: {
+        type: [String],
+    },
     isDeleted: {
         type: Boolean,
-        default: false
+        default: false,
     },
-    planId: {
-        type: mongoose.Types.ObjectId,
-        required: true
-    }
-
-
+    lessonProgress: [lessonProgressSchema],
+},{
+    timestamps:true
 });
 
 export default model("Lesson", lessonSchema);

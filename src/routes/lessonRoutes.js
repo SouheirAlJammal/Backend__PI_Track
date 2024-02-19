@@ -1,12 +1,13 @@
-import { Router } from "express";
-import { createLesson, getLesson, getLessons, deleteLesson, editLesson }from "../controllers/lessonController.js";
+import express from "express";
+import { createLesson, editLesson, deleteLesson, updateLessonProgress,getLessonsForParticipant,getLessonByIdForParticipant }from "../controllers/lessonController.js";
 
 const router = express.Router();
 
-router.post("/create",createLesson);
-router.get("/", getLessons);
+router.post("/create", createLesson);
+router.get("/:planId/", getLessonsForParticipant);
 router.delete("/delete/:id", deleteLesson);
-router.get("/oneTask/:id", getLesson);
-router.patch("/update/:id",editLesson);
+router.get("/lesson/:planId/:lessonId", getLessonByIdForParticipant);
+router.patch("/edit/:id", editLesson);
+router.patch("/updateProgress", updateLessonProgress); 
 
 export default router;

@@ -31,6 +31,9 @@ const register = async (req, res) => {
     const saltRounds = 10;
     password = await bcrypt.hash(password, saltRounds);
 
+    // Check if an image was uploaded
+    const image = req.file ? req.file.path : null;
+
     await User.create({
       username,
       email,
@@ -38,6 +41,7 @@ const register = async (req, res) => {
       DOB,
       description,
       role,
+      image,
     });
 
     return res.status(201).json({
@@ -45,8 +49,17 @@ const register = async (req, res) => {
       success: true,
     });
   } catch (error) {
+    console.error(error);
+
+    //image upload/download errors
+    if (error.code === "ENOENT") {
+      return res.status(400).json({
+        error: "Image not found or invalid path",
+      });
+    }
+
     return res.status(500).json({
-      error: error.message,
+      error: "Internal Server Error",
     });
   }
 };
