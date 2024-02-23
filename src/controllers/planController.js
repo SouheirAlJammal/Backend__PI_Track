@@ -1,6 +1,5 @@
 import Plan from "../models/planModel.js";
 import Lesson from "../models/lessonModel.js";
-
 // Function to check if a user is an editor in the plan
 const isEditorInPlan = (userId, plan) => {
     return plan.participants.some(participant => participant.userId.toString() === userId && participant.role === 'editor');

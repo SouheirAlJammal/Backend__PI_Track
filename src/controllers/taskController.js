@@ -4,11 +4,10 @@ const createTask = async (req, res) => {
     try {
         const { title, description, startDate, endDate, status } = req.body;
         const userId = req.userData.id;
-
+        console.log("hello", userId)
         if (!title || !description || !startDate || !endDate || !userId) {
             return res.status(400).json({ message: "Missing data!" });
         }
-
         const newTask = await Task.create({
             title, description, startDate, endDate, userId, status
         });
