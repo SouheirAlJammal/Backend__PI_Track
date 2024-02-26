@@ -9,18 +9,30 @@ const isEditorInPlan = (userId, plan) => {
 // Create a plan
 const createPlan = async (req, res) => {
     try {
-        const { title } = req.body;
+        const { title, description } = req.body;
 
-        if (!title) {
+        if (!title || !description) {
             return res.status(400).json({ message: "Missing required data!" });
         }
 
-        const createrId = req.user.id; // Assuming you are using JWT authentication to get the user ID
+        const createrId = req.userData.id;
+        const imagePath = req.file ? req.file.location : null;
+        console.log(imagePath)
+
+        const creatorParticipant = {
+            userId: createrId,
+            role: 'creator',
+        };
+
 
         const newPlan = await Plan.create({
             title,
+            description,
+            image: imagePath,
             createrId,
+            participants: [creatorParticipant],
         });
+
 
         res.status(201).json(newPlan);
     } catch (error) {
@@ -29,11 +41,12 @@ const createPlan = async (req, res) => {
     }
 };
 
+
 // Update plan details (only for the creator or editor of the plan)
 const editPlan = async (req, res) => {
     try {
         const { id } = req.params;
-        const { title } = req.body;
+        const { title, description } = req.body;
 
         const plan = await Plan.findById(id);
 
@@ -50,9 +63,33 @@ const editPlan = async (req, res) => {
 
         // Update plan details
         plan.title = title || plan.title;
+        plan.description = description || plan.description;
+        if (req.file) {
+            plan.image = req.file.location;
+        }
 
         // Save the updated plan
         await plan.save();
+
+        // Check for new participants and create initial lesson progress entries
+        const existingParticipantIds = plan.participants.map(participant => participant.userId.toString());
+        const newParticipants = plan.participants.filter(participant => !existingParticipantIds.includes(participant.userId.toString()));
+
+        // Loop through all lessons and create lesson progress entries for new participant
+        await Promise.all(plan.lessonsId.map(async lessonId => {
+            const lesson = await Lesson.findById(lessonId);
+            if (lesson) {
+                newParticipants.forEach(async newParticipant => {
+                    lesson.lessonProgress.push({
+                        participantId: newParticipant.userId,
+                        achievedMins: 0,
+                        notes: "",
+                        status: "Pending",
+                    });
+                });
+                await lesson.save();
+            }
+        }));
 
         res.status(200).json({ message: "Plan details updated successfully", data: plan });
     } catch (error) {
@@ -60,6 +97,7 @@ const editPlan = async (req, res) => {
         res.status(500).json({ message: "Error while updating plan details" });
     }
 };
+
 
 // Soft delete a plan (only for the creator of the plan)
 const deletePlan = async (req, res) => {
@@ -102,7 +140,7 @@ const deletePlan = async (req, res) => {
 // Fetch all plans for a user (creator, editor, and follower)
 const getAllPlans = async (req, res) => {
     try {
-        const userId = req.user.id; 
+        const userId = req.userData.id;
 
         // Find plans where the user is a participant
         const plans = await Plan.find({
@@ -132,4 +170,4 @@ const getPlanById = async (req, res) => {
         res.status(500).json({ message: "Error while getting plan details" });
     }
 };
-export { createPlan, editPlan, deletePlan, getAllPlans,getPlanById };
+export { createPlan, editPlan, deletePlan, getAllPlans, getPlanById };

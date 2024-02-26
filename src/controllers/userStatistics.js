@@ -2,7 +2,7 @@ import Task from "../models/taskModel.js";
 import Plan from '../models/planModel.js'
 const getTaskStatistics = async (req, res) => {
     try {
-        const userId = req.user.id; 
+        const userId = req.userData.id; 
 
         const pendingTasksCount = await Task.countDocuments({ userId, status: 'Pending' });
         const inProgressTasksCount = await Task.countDocuments({ userId, status: 'In Progress' });
@@ -22,7 +22,7 @@ const getTaskStatistics = async (req, res) => {
 
 const getPlansWithProgress = async (req, res) => {
     try {
-        const userId = req.user.id; 
+        const userId = req.userData.id; 
 
         // Fetch all plans
         const plans = await Plan.find({ "participants.userId": userId }).populate("lessonsId");
@@ -40,6 +40,7 @@ const getPlansWithProgress = async (req, res) => {
                 planId: plan._id,
                 title: plan.title,
                 progressPercentage,
+                totalLessons
             };
         });
 

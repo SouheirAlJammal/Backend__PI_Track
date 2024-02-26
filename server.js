@@ -7,7 +7,7 @@ import userRoute from './src/routes/userRoutes.js'
 import taskRoute from './src/routes/taskRoutes.js'
 import planRoute from './src/routes/planRoutes.js'
 import lessonRoute from './src/routes/lessonRoutes.js'
-
+import statisticsRoute from './src/routes/userStatisticsRoutes.js'
 const app = express();
 const port = process.env.PORT;
 app.use(express.json());
@@ -26,6 +26,8 @@ app.use("/api/users", userRoute);
 app.use("/api/tasks", taskRoute); 
 app.use("/api/lessons", lessonRoute); 
 app.use("/api/plans", planRoute); 
+app.use("/api/statistics", statisticsRoute); 
+
 
 
 

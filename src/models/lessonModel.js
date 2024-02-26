@@ -52,6 +52,11 @@ const lessonSchema = new mongoose.Schema({
         default: false,
     },
     lessonProgress: [lessonProgressSchema],
+    planId:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Plan',
+        required: true,
+    }
 },{
     timestamps:true
 });

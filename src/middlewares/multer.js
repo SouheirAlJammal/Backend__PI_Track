@@ -5,7 +5,7 @@ import { s3 } from "../config/s3Config.js";
 
 const s3Storage = multerS3({
   s3: s3, // s3 instance
-  bucket: "equilibre1", // change it as per your project requirement
+  bucket: "trackproject", // change it as per your project requirement
   acl: "public-read", // storage access type
   metadata: (req, file, cb) => {
     cb(null, {

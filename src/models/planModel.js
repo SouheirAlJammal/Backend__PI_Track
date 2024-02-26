@@ -19,13 +19,41 @@ const participantSchema = new mongoose.Schema({
     }
 });
 
+const invitationSchema = new mongoose.Schema({
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: function () {
+            // Only required if the invitations array is present
+            return this.parent().invitations && this.parent().invitations.length > 0;
+        },
+    },
+    role: {
+        type: String,
+        enum: ['editor', 'follower'],
+        required: function () {
+            // Only required if the invitations array is present
+            return this.parent().invitations && this.parent().invitations.length > 0;
+        },
+    },
+    isAccepted: {
+        type: Boolean,
+        default: false
+    }
+}, { _id: false });
 
 const planSchema = new mongoose.Schema({
     title: {
         type: String,
         required: true,
     },
-    image: String,
+    description: {
+        type: String,
+        required: true,
+    },
+    image: {
+        type: String,
+    },
     createrId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -44,23 +72,9 @@ const planSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
-    invitations: {
-        userId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User',
-            required: true,
-        },
-        role: {
-            type: String,
-            enum: ['editor', 'follower'],
-            required: true,
-        },
-        isAccepted: {
-            type: Boolean,
-            default: false
-        }
-    }
+    invitations: [invitationSchema], 
 }, {
     timestamps: true,
 });
+
 export default model("Plan", planSchema);
