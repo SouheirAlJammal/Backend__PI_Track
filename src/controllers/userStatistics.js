@@ -5,7 +5,7 @@ const getTaskStatistics = async (req, res) => {
         const userId = req.userData.id; 
 
         const pendingTasksCount = await Task.countDocuments({ userId, status: 'Pending' });
-        const inProgressTasksCount = await Task.countDocuments({ userId, status: 'In Progress' });
+        const inProgressTasksCount = await Task.countDocuments({ userId, status: 'Progress' });
         const completedTasksCount = await Task.countDocuments({ userId, status: 'Completed' });
 
         res.status(200).json({

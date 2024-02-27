@@ -204,6 +204,14 @@ const updateLessonProgress = async (req, res) => {
             }
 
             await lesson.save();
+            // Update the participant's achievedTotalMins in the plan
+            const participantIndex = plan.participants.findIndex(participant => participant.userId.toString() === req.userData.id);
+
+            if (participantIndex !== -1) {
+                const participant = plan.participants[participantIndex];
+                participant.achievedTotalMins += achievedMins;
+                await plan.save();
+            }
 
             res.status(200).json({ message: "Lesson progress updated successfully", data: lesson });
         } else {
