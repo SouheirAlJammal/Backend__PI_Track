@@ -33,9 +33,12 @@ const deleteTask = async (req, res) => {
     }
 };
 
+
 const getTasks = async (req, res) => {
+    const userId = req.userData.id; 
+
     try {
-        const tasks = await Task.find();
+        const tasks = await Task.find({ userId: userId });
 
         if (!tasks || tasks.length === 0) {
             return res.status(404).json({ error: "No tasks found" });
@@ -43,6 +46,7 @@ const getTasks = async (req, res) => {
 
         res.status(200).json({ data: tasks });
     } catch (error) {
+        console.error("Error while getting tasks:", error);
         res.status(500).json({ message: "Error while getting tasks" });
     }
 };

@@ -247,6 +247,7 @@ const getLessonsForParticipant = async (req, res) => {
         // Fetch lessons along with progress for the specified participant in the plan
         const lessons = await Lesson.find({
             _id: { $in: plan.lessonsId.map(lesson => lesson._id) } // Use lessonsId array from plan
+            ,isDeleted:false
         }).populate({
             path: 'lessonProgress',
             match: { participantId: userId } // Only populate progress for the specified participant

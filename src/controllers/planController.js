@@ -46,7 +46,7 @@ const createPlan = async (req, res) => {
 const editPlan = async (req, res) => {
     try {
         const { id } = req.params;
-        const { title, description } = req.body;
+        const { title, description ,participants} = req.body;
 
         const plan = await Plan.findById(id);
 
@@ -55,7 +55,7 @@ const editPlan = async (req, res) => {
         }
 
         // Check if the user is the creator or editor of the plan
-        const isCreatorOrEditor = plan.createrId.toString() === req.user.id || isEditorInPlan(req.user.id, plan);
+        const isCreatorOrEditor = plan.createrId.toString() === req.userData.id || isEditorInPlan(req.userData.id, plan);
 
         if (!isCreatorOrEditor) {
             return res.status(403).json({ message: "User is not authorized to edit this plan" });
@@ -64,6 +64,8 @@ const editPlan = async (req, res) => {
         // Update plan details
         plan.title = title || plan.title;
         plan.description = description || plan.description;
+        plan.participants = participants || plan.participants;
+
         if (req.file) {
             plan.image = req.file.location;
         }
@@ -73,7 +75,7 @@ const editPlan = async (req, res) => {
 
         // Check for new participants and create initial lesson progress entries
         const existingParticipantIds = plan.participants.map(participant => participant.userId.toString());
-        const newParticipants = plan.participants.filter(participant => !existingParticipantIds.includes(participant.userId.toString()));
+        const newParticipants = participants.filter(participant => !existingParticipantIds.includes(participant.userId.toString()));
 
         // Loop through all lessons and create lesson progress entries for new participant
         await Promise.all(plan.lessonsId.map(async lessonId => {
