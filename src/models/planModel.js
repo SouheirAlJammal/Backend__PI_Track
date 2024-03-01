@@ -20,9 +20,8 @@ const participantSchema = new mongoose.Schema({
 });
 
 const invitationSchema = new mongoose.Schema({
-    userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+    email: {
+        type: String,
         required: function () {
             // Only required if the invitations array is present
             return this.parent().invitations && this.parent().invitations.length > 0;
@@ -40,7 +39,7 @@ const invitationSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     }
-}, { _id: false });
+});
 
 const planSchema = new mongoose.Schema({
     title: {

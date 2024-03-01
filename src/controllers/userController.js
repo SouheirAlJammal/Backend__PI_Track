@@ -142,11 +142,11 @@ const getUser = async (req, res) => {
 };
 
 
-const getUserByMail = async (req, res) => {
-  const { email } = req.userData;
+const getUserById = async (req, res) => {
+  const { userId } = req.body;
 
   try {
-    const user = await User.findOne({email});
+    const user = await User.findOne({userId});
 
     if (!user) {
       return res.status(401).json({ message: "User not found" });
@@ -241,4 +241,4 @@ const logout = async (req, res) => {
   }
 };
 
-export { register, login, getUsers, getUser, updateProfile, deleteUser, logout ,getUserByMail};
+export { register, login, getUsers, getUser, updateProfile, deleteUser, logout ,getUserById};

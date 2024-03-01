@@ -1,5 +1,8 @@
 import Plan from "../models/planModel.js";
 import Lesson from "../models/lessonModel.js";
+import { sendInvitationEmail } from "../utils/sendingMails.js";
+import  validator  from "validator";
+
 // Function to check if a user is an editor in the plan
 const isEditorInPlan = (userId, plan) => {
     return plan.participants.some(participant => participant.userId.toString() === userId && participant.role === 'editor');
@@ -46,7 +49,7 @@ const createPlan = async (req, res) => {
 const editPlan = async (req, res) => {
     try {
         const { id } = req.params;
-        const { title, description ,participants} = req.body;
+        const { title, description, participants } = req.body;
 
         const plan = await Plan.findById(id);
 
@@ -172,4 +175,86 @@ const getPlanById = async (req, res) => {
         res.status(500).json({ message: "Error while getting plan details" });
     }
 };
-export { createPlan, editPlan, deletePlan, getAllPlans, getPlanById };
+
+const InviteParticipant = async (req, res) => {
+    try {
+        const { email, role,planId } = req.body;
+
+        // Find the plan
+        const plan = await Plan.findById(planId);
+
+        if (!plan) {
+            return res.status(404).json({ message: 'Plan not found' });
+        }
+
+        // Check if the user making the request is the creator of the plan
+        if (plan.createrId.toString() !== req.userData.id) {
+            return res.status(403).json({ message: 'Unauthorized to invite users to this plan' });
+        }
+
+        // Validate email format
+        if (!validator.isEmail(email)) {
+            return res.status(400).json({ message: 'Invalid email format' });
+        }
+
+        // Create a new invitation
+        const newInvitation = {
+            email,
+            role,
+            isAccepted: false,
+        };
+
+        // Add the new invitation to the plan
+        plan.invitations.push(newInvitation);
+
+        // Save the updated plan
+        await plan.save();
+        const invitationId = plan.invitations[plan.invitations.length - 1]._id;
+
+        // Send invitation email with the invitation ID
+        await sendInvitationEmail(email, `${process.env.FRONTEND_ORIGIN}/invitation/accept/${planId}/${invitationId}`);
+
+        res.status(200).json({ message: 'Invitation sent successfully' });
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+}
+
+const acceptInvitation = async (req, res) => {
+    try {
+        const { planId, invitationId } = req.body;
+console.log(planId,'ffffffffffffff',invitationId)
+        // Find the plan with the provided planId
+        const plan = await Plan.findById(planId);
+
+        if (!plan) {
+            return res.status(404).json({ message: 'Plan not found' });
+        }
+
+        // Find the invitation by ID
+        const invitationIndex = plan.invitations.findIndex(invitation => invitation._id.toString() === invitationId);
+
+        if (invitationIndex === -1) {
+            return res.status(404).json({ message: 'Invitation not found' });
+        }
+
+        const invitation = plan.invitations[invitationIndex];
+
+        // Update the plan participants and remove the invitation
+        plan.participants.push({ userId: '65e18c17294a2bc81aeca523', role: invitation.role });
+        plan.invitations.splice(invitationIndex, 1);
+
+        // Save the updated plan
+        const updatedPlan = await plan.save();
+
+        res.status(200).json({ message: 'Invitation accepted successfully', data: updatedPlan });
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+};
+
+
+
+export { createPlan, editPlan, deletePlan, getAllPlans, getPlanById,InviteParticipant,acceptInvitation };

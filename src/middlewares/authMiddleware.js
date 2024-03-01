@@ -29,5 +29,4 @@ const isAuthenticated = (request, response, next) => {
     };
   };
   
-  
   export {isAuthorizedUser, isAuthenticated};

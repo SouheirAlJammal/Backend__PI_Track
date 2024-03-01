@@ -24,7 +24,8 @@
     "nodemon": "^3.0.2"
   },
   "scripts": {
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "build" : "npm install"
   },
   "keywords": [],
   "author": "",
