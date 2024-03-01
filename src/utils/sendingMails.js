@@ -10,7 +10,7 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-const sendingMail = async (form) => {
+const sendingContactMail = async (formData) => {
     try {
     
         const mailOptions = {
@@ -41,4 +41,4 @@ const sendingMail = async (form) => {
 };
 
 
-export { sendingMail };
+export { sendingContactMail };
