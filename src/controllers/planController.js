@@ -224,7 +224,6 @@ const InviteParticipant = async (req, res) => {
 const acceptInvitation = async (req, res) => {
     try {
         const { planId, invitationId } = req.body;
-console.log(planId,'ffffffffffffff',invitationId)
         // Find the plan with the provided planId
         const plan = await Plan.findById(planId);
 
@@ -256,5 +255,26 @@ console.log(planId,'ffffffffffffff',invitationId)
 };
 
 
+///get followers Infooo
+const getFollowersInfo = async (req, res) => {
+    try {
+        const { planId } = req.params;
+        const plan = await Plan.findById(planId).populate({
+            path: 'participants.userId',
+            model: 'User',
+            select: 'username email image',
+        });
 
-export { createPlan, editPlan, deletePlan, getAllPlans, getPlanById,InviteParticipant,acceptInvitation };
+        if (!plan) {
+            return res.status(404).json({ message: 'Plan not found' });
+        }
+
+        res.status(200).json({ participants: plan.participants });
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+};
+
+
+export { createPlan, editPlan, deletePlan, getAllPlans, getPlanById,InviteParticipant,acceptInvitation,getFollowersInfo };
