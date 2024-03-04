@@ -50,17 +50,67 @@ const sendInvitationEmail = async (recipientEmail, invitationLink) => {
             to: recipientEmail,
             subject: 'You have received an invitation',
             html: `
-                <p>Hello!</p>
-                <p>You have received an invitation to join a plan on PI-Track.</p>
-                <p>Click the button below to accept the invitation:</p>
-                <a href="${invitationLink}" target="_blank">
-                    <button style="background-color: rgb(7,28,53); color: white; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer;">
-                        Accept Invitation
-                    </button>
-                </a>
-                <p>If you are having trouble clicking the button, you can copy and paste the following link into your browser:</p>
-                <p>${invitationLink}</p>
-                <p>Thank you!</p>
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <style>
+                    body {
+                        font-family: 'Arial', sans-serif;
+                        background-color: #f4f4f4;
+                        margin: 0;
+                        padding: 0;
+                    }
+                    .container {
+                        max-width: 800px;
+                        margin: 30px;
+                        background-color: #fff;
+                        padding: 20px;
+                        border-radius: 8px;
+                        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                    }
+                    h1 {
+                        color: rgb(7,28,53);
+                    }
+                    p {
+                        font-size: 16px;
+                        color: #333;
+                        margin-bottom: 20px;
+                    }
+                    a {
+                        text-decoration: none;
+                        color: #fff;
+                    }
+                    button {
+                        background-color: rgb(7,28,53);
+                        color: #fff;
+                        padding: 12px 24px;
+                        border: none;
+                        border-radius: 5px;
+                        font-size: 16px;
+                        cursor: pointer;
+                        transition: background-color 0.3s ease;
+                        cursor:pointer
+                    }
+                    button:hover {
+                        background-color: rgb(7,28,53);
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <h1>Invitation to PI-Track</h1>
+                    <p>You've received an invitation to join a plan on PI-Track.</p>
+                    <a href="${invitationLink}" target="_blank">
+                        <button>Accept Invitation</button>
+                    </a>
+                    <p>If you have trouble with the button, copy and paste the following link into your browser:</p>
+                    <p>${invitationLink}</p>
+                </div>
+            </body>
+            </html>
+            
             `,
         };
 
