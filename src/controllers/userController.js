@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import { generateToken } from "../utils/jwt.js";
 import User from "../models/userModel.js";
+import { sendingContactMail } from "../utils/sendingMails.js";
 
 const register = async (req, res) => {
   let {
@@ -146,7 +147,7 @@ const getUserById = async (req, res) => {
   const { userId } = req.body;
 
   try {
-    const user = await User.findOne({userId});
+    const user = await User.findOne({ userId });
 
     if (!user) {
       return res.status(401).json({ message: "User not found" });
@@ -241,4 +242,16 @@ const logout = async (req, res) => {
   }
 };
 
-export { register, login, getUsers, getUser, updateProfile, deleteUser, logout ,getUserById};
+const sendingEmail = async (req, res) => {
+  try {
+    const { name,email,message } = req.body;
+
+
+    await sendingContactMail(name,email,message)
+    return res.status(200).json({ message: "email send succ" });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+}
+
+export { register, login, getUsers, getUser, updateProfile, deleteUser, logout, getUserById,sendingEmail };

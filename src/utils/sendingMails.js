@@ -10,21 +10,22 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-const sendingContactMail = async (formData) => {
+const sendingContactMail = async (name,email,message) => {
     try {
     
         const mailOptions = {
             from: {
-                name: 'PI-Track',
-                address: process.env.EMAIL,
+                name: name ,
+                address: email,
             },
+            to: process.env.EMAIL,
             subject: 'New Inquiry from Your Website',
             text: `
               Hello,\n\n
               You have a new inquiry from your website.\n\n
-              Name: ${formData.name}\n
-              Email: ${formData.email}\n
-              Message: ${formData.message}\n
+              Name: ${name}\n
+              Email: ${email}\n
+              Message: ${message}\n
             `,
         };
 
