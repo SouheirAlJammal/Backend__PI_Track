@@ -86,7 +86,7 @@ const login = async (req, res) => {
     res.cookie("accessToken", jwtToken, {
       httpOnly: true,
       sameSite: "None",
-      secure: process.env.NODE_ENV === "production", // Set to true in production (requires HTTPS)
+      secure: true, // Set to true in production (requires HTTPS)
     });
 
     return res.status(200).json({
