@@ -83,10 +83,11 @@ const login = async (req, res) => {
 
     // Generate JWT token
     const jwtToken = generateToken(user);
-    res.cookie("accessToken", jwtToken, {
+    res.cookie("accessToken", jwtToken,{
       httpOnly: true,
       sameSite: "None",
-      secure: true, 
+      secure: true,
+      domain: '.https://pi-track.vercel.app', 
     });
 
     return res.status(200).json({
@@ -232,7 +233,9 @@ const deleteUser = async (req, res) => {
 
 const logout = async (req, res) => {
   try {
-    res.clearCookie('accessToken');
+    res.clearCookie('accessToken', {
+      domain: '.ttps://pi-track.vercel.app',
+    });
     res.status(200).json({ message: 'Logged out' });
   } catch (error) {
     return res.status(401).json({
