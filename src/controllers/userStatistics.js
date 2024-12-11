@@ -25,7 +25,7 @@ const getPlansWithProgress = async (req, res) => {
         const userId = req.userData.id; 
 
         // Fetch all plans
-        const plans = await Plan.find({ "participants.userId": userId }).populate("lessonsId");
+        const plans = await Plan.find({ "participants.userId": userId }).populate("lessonsId").sort({ updatedAt: -1 }).limit(3);
 
         // Calculate progress percentage for each plan
         const plansWithProgress = plans.map((plan) => {

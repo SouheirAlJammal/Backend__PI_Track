@@ -8,7 +8,6 @@ const isAuthenticated = (request, response, next) => {
   
       const decoded = verifyToken(token);
       request.userData = decoded;
-      console.log(request.userData)
       next();
     } catch (error) {
       return response.status(401).json({

@@ -209,7 +209,7 @@ const updateLessonProgress = async (req, res) => {
 
             if (participantIndex !== -1) {
                 const participant = plan.participants[participantIndex];
-                participant.achievedTotalMins += achievedMins;
+                participant.achievedTotalMins = achievedMins;
                 await plan.save();
             }
 

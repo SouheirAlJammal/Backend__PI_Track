@@ -83,7 +83,7 @@ const login = async (req, res) => {
 
     // Generate JWT token
     const jwtToken = generateToken(user);
-    res.cookie("accessToken", jwtToken,{
+    res.cookie("accessToken", jwtToken, {
       httpOnly: true,
       sameSite: "None",
       secure: true,
@@ -131,7 +131,11 @@ const getUser = async (req, res) => {
     }
 
     return res.status(200).json({
-      data: user,
+      data: {
+        username: user.username,
+        email: user.email,
+        DOB: user.DOB
+      },
       success: true,
       message: "User found",
     });
@@ -234,7 +238,7 @@ const deleteUser = async (req, res) => {
 const logout = async (req, res) => {
   try {
     res.clearCookie('accessToken', {
-      domain: '.https://pi-track.vercel.app',
+      domain: '.pi-track.vercel.app',
     });
     res.status(200).json({ message: 'Logged out' });
   } catch (error) {
@@ -247,14 +251,14 @@ const logout = async (req, res) => {
 
 const sendingEmail = async (req, res) => {
   try {
-    const { name,email,message } = req.body;
+    const { name, email, message } = req.body;
 
 
-    await sendingContactMail(name,email,message)
+    await sendingContactMail(name, email, message)
     return res.status(200).json({ message: "email send succ" });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
 }
 
-export { register, login, getUsers, getUser, updateProfile, deleteUser, logout, getUserById,sendingEmail };
+export { register, login, getUsers, getUser, updateProfile, deleteUser, logout, getUserById, sendingEmail };
