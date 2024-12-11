@@ -85,9 +85,9 @@ const login = async (req, res) => {
     const jwtToken = generateToken(user);
     res.cookie("accessToken", jwtToken,{
       httpOnly: true,
-      sameSite: "None",
+      // sameSite: "None",
       secure: true,
-      domain: '.https://pi-track.vercel.app', 
+      domain:'.pi-track.vercel.app'
     });
 
     return res.status(200).json({
