@@ -14,7 +14,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin: 'https://pi-track.vercel.app',
+    // origin:'http://localhost:3000',
+    origin:'https://pi-track.vercel.app/',
     credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     headers: 'Content-Type, Authorization',
