@@ -92,6 +92,11 @@ const login = async (req, res) => {
 
     return res.status(200).json({
       message: "User logged in",
+      data: {
+        username: user.username,
+        email: user.email,
+        DOB: user.DOB
+      },
     });
   } catch (err) {
     return res.status(401).json({ message: err.message, success: false });
