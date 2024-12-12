@@ -65,41 +65,57 @@ const register = async (req, res) => {
   }
 };
 
-const login = async (req, res) => {
+const login = async (req, res) =>{
   try {
-    const { email, password } = req.body;
-
-    const user = await User.findOne({ email });
-
+    const token = req.cookies?.access_token;
+    if (token) {
+      const decoded = verifyToken(token);
+      if (decoded) {
+        // const id = new mongoose.Types.ObjectId(decoded.id);
+        const user = await User.findOne({
+          _id: decoded.id,
+        });
+        if (user) {
+          return res.json(user);
+        }
+      }
+    }
+  } catch (error) {
+    console.log(error);
+  }
+  const { email, password } = req.body;
+  if ([password].some((item) => item === "")) {
+    return res.status(400).json({ error: "All Fields are Required!" });
+  }
+  let user;
+  try {
+    user = await User.findOne({ email: email });
     if (!user) {
-      return res.status(401).json({ message: "Email not found" });
+      user = await User.findOne({ username: username });
+      if (!user) {
+        return res.status(404).json({ error: "User doesn't exist!" });
+      }
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-
-    if (!isPasswordValid) {
-      return res.status(401).json({ message: "Incorrect password" });
+    const validPass = await bcrypt.compare(password, user.password);
+    if (!validPass) {
+      return res.status(500).json({ error: "Wrong Password" });
     }
 
-    // Generate JWT token
-    const jwtToken = generateToken(user);
-    res.cookie("accessToken", jwtToken, {
-      httpOnly: true,
-      sameSite: "None",
-      secure: true,
-      domain:'.pi-track.vercel.app'
-    });
-
-    return res.status(200).json({
-      message: "User logged in",
-      data: {
-        username: user.username,
-        email: user.email,
-        DOB: user.DOB
-      },
-    });
-  } catch (err) {
-    return res.status(401).json({ message: err.message, success: false });
+    const token = generateToken(user)
+    // const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log(user);
+    res
+      .cookie("access_token", token, {
+        secure: true,
+        httpOnly: true,
+        sameSite: "None",
+      })
+      .status(200)
+      .json(user);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Error Sign In" });
   }
 };
 
