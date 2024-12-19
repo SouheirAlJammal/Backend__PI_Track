@@ -1,8 +1,8 @@
 import bcrypt from "bcryptjs";
-import { generateToken } from "../utils/jwt.js";
+import { generateToken, verifyToken } from "../utils/jwt.js";
 import User from "../models/userModel.js";
 import { sendingContactMail } from "../utils/sendingMails.js";
-
+const isProduction = process.env.NODE_ENV === 'production';
 const register = async (req, res) => {
   let {
     username,
@@ -65,51 +65,49 @@ const register = async (req, res) => {
   }
 };
 
-const login = async (req, res) =>{
+const login = async (req, res) => {
   try {
-    const token = req.cookies?.access_token;
+    const token = req.cookies?.access_token
+    // If a token is present, verify and fetch user details
     if (token) {
       const decoded = verifyToken(token);
       if (decoded) {
-        // const id = new mongoose.Types.ObjectId(decoded.id);
-        const user = await User.findOne({
-          _id: decoded.id,
-        });
+        const user = await User.findById(decoded.id);
         if (user) {
           return res.json(user);
         }
       }
     }
-  } catch (error) {
-    console.log(error);
-  }
-  const { email, password } = req.body;
-  if ([password].some((item) => item === "")) {
-    return res.status(400).json({ error: "All Fields are Required!" });
-  }
-  let user;
-  try {
-    user = await User.findOne({ email: email });
+
+    // Extract email and password from the request body
+    const { email, password } = req.body;
+
+    // Validate required fields
+    if (!email || !password) {
+      return res.status(400).json({ error: "Email and Password are required!" });
+    }
+
+    // Find user by email
+    const user = await User.findOne({ email });
     if (!user) {
-      user = await User.findOne({ username: username });
-      if (!user) {
-        return res.status(404).json({ error: "User doesn't exist!" });
-      }
+      return res.status(404).json({ error: "User not found!" });
     }
 
-    const validPass = await bcrypt.compare(password, user.password);
-    if (!validPass) {
-      return res.status(500).json({ error: "Wrong Password" });
+    // Verify the password
+    const isValidPassword = await bcrypt.compare(password, user.password);
+    if (!isValidPassword) {
+      return res.status(400).json({ error: "Invalid password!" });
     }
 
-    const token = generateToken(user)
-    // const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log(user);
-    res
-      .cookie("access_token", token, {
-        secure: true,
+    //generate token
+    const newToken = generateToken(user)
+    console.log(user, 'user after login no token')
+    res.cookie("access_token", newToken,
+      {
         httpOnly: true,
-        sameSite: "None",
+        secure: isProduction,
+        sameSite: isProduction ? "None" : "Lax",
+        maxAge: 24 * 60 * 60 * 1000,
       })
       .status(200)
       .json(user);
@@ -143,7 +141,6 @@ const getUsers = async (req, res) => {
 
 const getUser = async (req, res) => {
   const { id } = req.userData;
-
   try {
     const user = await User.findById(id);
 
@@ -152,11 +149,7 @@ const getUser = async (req, res) => {
     }
 
     return res.status(200).json({
-      data: {
-        username: user.username,
-        email: user.email,
-        DOB: user.DOB
-      },
+      data: user,
       success: true,
       message: "User found",
     });
@@ -258,8 +251,10 @@ const deleteUser = async (req, res) => {
 
 const logout = async (req, res) => {
   try {
-    res.clearCookie('accessToken', {
-      domain: '.pi-track.vercel.app',
+    res.clearCookie('access_token', {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "None" : "Lax"
     });
     res.status(200).json({ message: 'Logged out' });
   } catch (error) {

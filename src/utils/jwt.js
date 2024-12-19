@@ -16,6 +16,9 @@ export const generateToken = (user) => {
 
 
 export const verifyToken = (token) => {
-    return jwt.verify(token, secret);
+    try {
+        return jwt.verify(token, secret);
+    } catch (error) {
+        throw new Error('Invalid token');
+    }
 };
-
