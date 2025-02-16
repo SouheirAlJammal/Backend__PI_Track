@@ -30,7 +30,7 @@ PI-Track is a feature-rich web application designed for efficient time and task 
 ### **Backend Setup**
 1. Clone the repository and navigate to the backend directory:
    ```bash
-   git clone https://github.com/SouheirAlJammal/Backend_Final_Project.git
+   git clone https://github.com/SouheirAlJammal/Backend_PI_Track.git
    cd backend
 2. Install dependencies:
    ```bash
